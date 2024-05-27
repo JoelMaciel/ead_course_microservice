@@ -33,6 +33,7 @@ public class ModuleModel {
     private OffsetDateTime creationDate;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @JoinColumn(name = "course_id")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private CourseModel course;
 
