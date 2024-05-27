@@ -20,4 +20,6 @@ public interface ModuleService {
     List<ModuleDTO> findAllByCourse(UUID courseId);
 
     ModuleDTO findById(UUID courseId, UUID moduleId);
+
+    ModuleModel optionalModuleModel(UUID moduleId);
 }

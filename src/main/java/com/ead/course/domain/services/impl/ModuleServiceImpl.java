@@ -4,6 +4,7 @@ import com.ead.course.domain.converter.ModuleConverter;
 import com.ead.course.domain.dtos.request.ModuleRequestDTO;
 import com.ead.course.domain.dtos.response.ModuleDTO;
 import com.ead.course.domain.exceptions.ModuleCourseNotFoundException;
+import com.ead.course.domain.exceptions.ModuleNotFoundException;
 import com.ead.course.domain.models.CourseModel;
 import com.ead.course.domain.models.LessonModel;
 import com.ead.course.domain.models.ModuleModel;
@@ -68,9 +69,14 @@ public class ModuleServiceImpl implements ModuleService {
     }
 
     @Override
+    public ModuleModel optionalModuleModel(UUID moduleId) {
+        return moduleRepository.findById(moduleId)
+                .orElseThrow(() -> new ModuleNotFoundException(moduleId));
+    }
+
+    @Override
     public ModuleModel findModuleIntoCourse(UUID courseId, UUID moduleId) {
         return moduleRepository.findModuleIntoCourse(courseId, moduleId)
                 .orElseThrow(() -> new ModuleCourseNotFoundException(MSG_MODULE_COURSE_NOT_FOUND));
     }
-
 }
