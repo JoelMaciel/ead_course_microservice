@@ -15,7 +15,7 @@ public class CourseConverter {
     private CourseConverter() {
     }
 
-    public static List<CourseDTO> toDTOPage(List<CourseModel> courseModels) {
+    public static List<CourseDTO> toDTOList(List<CourseModel> courseModels) {
         return courseModels.stream()
                 .map(CourseConverter::toDTO)
                 .collect(Collectors.toList());

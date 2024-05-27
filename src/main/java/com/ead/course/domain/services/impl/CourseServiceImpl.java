@@ -31,7 +31,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public List<CourseDTO> findAll() {
         List<CourseModel> courseModels = courseRepository.findAll();
-        return CourseConverter.toDTOPage(courseModels);
+        return CourseConverter.toDTOList(courseModels);
     }
 
     @Override
