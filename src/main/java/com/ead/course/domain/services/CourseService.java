@@ -4,8 +4,10 @@ import com.ead.course.domain.dtos.request.CourseRequestDTO;
 import com.ead.course.domain.dtos.request.CourseUpdateRequestDTO;
 import com.ead.course.domain.dtos.response.CourseDTO;
 import com.ead.course.domain.models.CourseModel;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
-import java.util.List;
 import java.util.UUID;
 
 public interface CourseService {
@@ -18,7 +20,7 @@ public interface CourseService {
 
     CourseDTO update(UUID courseId, CourseUpdateRequestDTO courseUpdateRequestDTO);
 
-    List<CourseDTO> findAll();
+    Page<CourseDTO> findAll(Specification<CourseModel> spec, Pageable pageable);
 
     CourseDTO findById(UUID courseId);
 }

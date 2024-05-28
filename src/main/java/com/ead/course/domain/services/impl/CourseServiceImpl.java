@@ -14,6 +14,9 @@ import com.ead.course.domain.repositories.LessonRepository;
 import com.ead.course.domain.repositories.ModuleRepository;
 import com.ead.course.domain.services.CourseService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,9 +32,9 @@ public class CourseServiceImpl implements CourseService {
     private final LessonRepository lessonRepository;
 
     @Override
-    public List<CourseDTO> findAll() {
-        List<CourseModel> courseModels = courseRepository.findAll();
-        return CourseConverter.toDTOList(courseModels);
+    public Page<CourseDTO> findAll(Specification<CourseModel> spec, Pageable pageable) {
+        Page<CourseModel> courseModels = courseRepository.findAll(spec, pageable);
+        return CourseConverter.toDTOPage(courseModels);
     }
 
     @Override
