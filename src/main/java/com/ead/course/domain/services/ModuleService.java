@@ -3,23 +3,25 @@ package com.ead.course.domain.services;
 import com.ead.course.domain.dtos.request.ModuleRequestDTO;
 import com.ead.course.domain.dtos.response.ModuleDTO;
 import com.ead.course.domain.models.ModuleModel;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
-import java.util.List;
 import java.util.UUID;
 
 public interface ModuleService {
 
-    void delete(ModuleModel moduleModel);
+    Page<ModuleDTO> findAllByCourse(Specification<ModuleModel> spec, Pageable pageable);
 
-    ModuleDTO save(UUID courseId, ModuleRequestDTO moduleRequestDTO);
-
-    ModuleModel findModuleIntoCourse(UUID courseId, UUID moduleId);
+    ModuleDTO findById(UUID courseId, UUID moduleId);
 
     ModuleDTO update(UUID courseId, UUID moduleId, ModuleRequestDTO moduleRequestDTO);
 
-    List<ModuleDTO> findAllByCourse(UUID courseId);
+    ModuleDTO save(UUID courseId, ModuleRequestDTO moduleRequestDTO);
 
-    ModuleDTO findById(UUID courseId, UUID moduleId);
+    void delete(ModuleModel moduleModel);
+
+    ModuleModel findModuleIntoCourse(UUID courseId, UUID moduleId);
 
     ModuleModel optionalModuleModel(UUID moduleId);
 }

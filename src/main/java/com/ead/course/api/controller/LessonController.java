@@ -5,12 +5,16 @@ import com.ead.course.domain.dtos.request.LessonRequestDTO;
 import com.ead.course.domain.dtos.request.LessonUpdateRequestDTO;
 import com.ead.course.domain.dtos.response.LessonDTO;
 import com.ead.course.domain.services.LessonService;
+import com.ead.course.domain.specifications.SpecificationTemplate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -21,8 +25,14 @@ public class LessonController {
     private final LessonService lessonService;
 
     @GetMapping
-    public List<LessonDTO> getAllLessons(@PathVariable UUID moduleId) {
-        return lessonService.findAllLessonsIntoModule(moduleId);
+    public Page<LessonDTO> getAllLessons(
+            @PathVariable UUID moduleId, SpecificationTemplate.LessonSpec spec,
+            @PageableDefault(page = 0, size = 10, sort = "lessonId", direction = Sort.Direction.ASC)
+            Pageable pageable
+    ) {
+        return lessonService.findAllLessonsIntoModule(
+                SpecificationTemplate.lessonsModuleId(moduleId).and(spec), pageable
+        );
 
     }
 

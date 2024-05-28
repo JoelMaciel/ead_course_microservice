@@ -4,10 +4,9 @@ import com.ead.course.domain.dtos.request.CourseRequestDTO;
 import com.ead.course.domain.dtos.request.CourseUpdateRequestDTO;
 import com.ead.course.domain.dtos.response.CourseDTO;
 import com.ead.course.domain.models.CourseModel;
+import org.springframework.data.domain.Page;
 
 import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 
 public class CourseConverter {
@@ -15,10 +14,8 @@ public class CourseConverter {
     private CourseConverter() {
     }
 
-    public static List<CourseDTO> toDTOList(List<CourseModel> courseModels) {
-        return courseModels.stream()
-                .map(CourseConverter::toDTO)
-                .collect(Collectors.toList());
+    public static Page<CourseDTO> toDTOPage(Page<CourseModel> courseModels) {
+        return courseModels.map(CourseConverter::toDTO);
     }
 
     public static CourseDTO toDTO(CourseModel courseModel) {
