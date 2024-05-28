@@ -11,6 +11,7 @@ import com.ead.course.domain.repositories.LessonRepository;
 import com.ead.course.domain.services.LessonService;
 import com.ead.course.domain.services.ModuleService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+@Log4j2
 @RequiredArgsConstructor
 @Service
 public class LessonServiceImpl implements LessonService {
@@ -30,12 +32,14 @@ public class LessonServiceImpl implements LessonService {
     @Override
     public Page<LessonDTO> findAllLessonsIntoModule(Specification<LessonModel> spec, Pageable pageable) {
         Page<LessonModel> lessonModels = lessonRepository.findAll(spec, pageable);
+        log.debug("GET All Lessons {} ", lessonModels.toString());
         return LessonConverter.toDTOPage(lessonModels);
     }
 
     @Override
     public LessonDTO findById(UUID moduleId, UUID lessonId) {
         LessonModel lessonModel = findLessonIntoModule(moduleId, lessonId);
+        log.debug("GET One Lesson {} ", lessonModel.toString());
         return LessonConverter.toDTO(lessonModel);
     }
 
@@ -44,6 +48,7 @@ public class LessonServiceImpl implements LessonService {
     public LessonDTO update(UUID moduleId, UUID lessonId, LessonUpdateRequestDTO lessonUpdateRequestDTO) {
         LessonModel lessonModel = findLessonIntoModule(moduleId, lessonId);
         LessonModel lessonUpdated = LessonConverter.toUpdateEntity(lessonModel, lessonUpdateRequestDTO);
+        log.debug("PUT Lesson updated {} ", lessonUpdated.toString());
         return LessonConverter.toDTO(lessonRepository.save(lessonUpdated));
     }
 
@@ -52,7 +57,7 @@ public class LessonServiceImpl implements LessonService {
     public LessonDTO save(UUID moduleId, LessonRequestDTO lessonRequestDTO) {
         ModuleModel moduleModel = moduleService.optionalModuleModel(moduleId);
         LessonModel lesson = LessonConverter.toEntity(lessonRequestDTO, moduleModel);
-
+        log.debug("POST Lesson saved {} ", lesson.toString());
         return LessonConverter.toDTO(lessonRepository.save(lesson));
     }
 
@@ -60,6 +65,7 @@ public class LessonServiceImpl implements LessonService {
     @Override
     public void delete(UUID moduleId, UUID lessonId) {
         LessonModel lesson = findLessonIntoModule(moduleId, lessonId);
+        log.debug("DELETE Lesson {} ", lesson.toString());
         lessonRepository.delete(lesson);
     }
 

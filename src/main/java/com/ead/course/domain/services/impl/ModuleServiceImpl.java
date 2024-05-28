@@ -13,6 +13,7 @@ import com.ead.course.domain.repositories.ModuleRepository;
 import com.ead.course.domain.services.CourseService;
 import com.ead.course.domain.services.ModuleService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
+@Log4j2
 @RequiredArgsConstructor
 @Service
 public class ModuleServiceImpl implements ModuleService {
@@ -34,12 +36,14 @@ public class ModuleServiceImpl implements ModuleService {
     @Override
     public Page<ModuleDTO> findAllByCourse(Specification<ModuleModel> spec, Pageable pageable) {
         Page<ModuleModel> moduleModelPage = moduleRepository.findAll(spec, pageable);
+        log.debug("GET All Modules {} ", moduleModelPage.toString());
         return ModuleConverter.toDTOPage(moduleModelPage);
     }
 
     @Override
     public ModuleDTO findById(UUID courseId, UUID moduleId) {
         ModuleModel module = findModuleIntoCourse(courseId, moduleId);
+        log.debug("GET One Module {} ", module.toString());
         return ModuleConverter.toDTO(module);
     }
 
@@ -49,6 +53,7 @@ public class ModuleServiceImpl implements ModuleService {
         CourseModel courseModel = courseService.optionalCourse(courseId);
         ModuleModel module = ModuleConverter.toEntity(moduleRequestDTO, courseModel);
         ModuleModel savedModule = moduleRepository.save(module);
+        log.debug("POST Module saved {} ", savedModule.toString());
         return ModuleConverter.toDTO(savedModule);
     }
 
@@ -57,8 +62,9 @@ public class ModuleServiceImpl implements ModuleService {
     public ModuleDTO update(UUID courseId, UUID moduleId, ModuleRequestDTO moduleRequestDTO) {
         ModuleModel model = findModuleIntoCourse(courseId, moduleId);
 
-        ModuleModel modelUpdated = ModuleConverter.toUpdateEntity(model, moduleRequestDTO);
-        return ModuleConverter.toDTO(moduleRepository.save(modelUpdated));
+        ModuleModel moduleUpdated = ModuleConverter.toUpdateEntity(model, moduleRequestDTO);
+        log.debug("PUT Module updated {} ", moduleUpdated.toString());
+        return ModuleConverter.toDTO(moduleRepository.save(moduleUpdated));
     }
 
     @Transactional
