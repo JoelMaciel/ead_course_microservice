@@ -14,6 +14,7 @@ import com.ead.course.domain.repositories.LessonRepository;
 import com.ead.course.domain.repositories.ModuleRepository;
 import com.ead.course.domain.services.CourseService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
+@Log4j2
 @RequiredArgsConstructor
 @Service
 public class CourseServiceImpl implements CourseService {
@@ -34,12 +36,14 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public Page<CourseDTO> findAll(Specification<CourseModel> spec, Pageable pageable) {
         Page<CourseModel> courseModels = courseRepository.findAll(spec, pageable);
+        log.debug("GET list course {} ", courseModels.toString());
         return CourseConverter.toDTOPage(courseModels);
     }
 
     @Override
     public CourseDTO findById(UUID courseId) {
         CourseModel courseModel = optionalCourse(courseId);
+        log.debug("GET One course {} ", courseModel.toString());
         return CourseConverter.toDTO(courseModel);
     }
 
@@ -47,6 +51,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public CourseDTO save(CourseRequestDTO courseRequestDTO) {
         CourseModel courseModel = CourseConverter.toEntity(courseRequestDTO);
+        log.debug("POST course saved {} ", courseModel.toString());
         return CourseConverter.toDTO(courseRepository.save(courseModel));
     }
 
@@ -54,6 +59,7 @@ public class CourseServiceImpl implements CourseService {
     public CourseDTO update(UUID courseId, CourseUpdateRequestDTO courseUpdateRequestDTO) {
         CourseModel courseModel = optionalCourse(courseId);
         CourseModel courseUpdated = CourseConverter.toUpdateEntity(courseModel, courseUpdateRequestDTO);
+        log.debug("PATCH course updated {} ", courseUpdated.toString());
         return CourseConverter.toDTO(courseRepository.save(courseUpdated));
     }
 
@@ -63,6 +69,8 @@ public class CourseServiceImpl implements CourseService {
         List<ModuleModel> moduleList = moduleRepository.findAllModulesIntoCourse(courseModel.getCourseId());
         deleteModulesAndLessons(moduleList);
         courseRepository.delete(courseModel);
+        log.debug("DELETE Module and Lesson {} ", moduleList.toString());
+        log.debug("DELETE course {} ", courseModel.toString());
     }
 
     @Override
