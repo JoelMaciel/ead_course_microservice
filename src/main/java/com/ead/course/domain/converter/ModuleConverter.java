@@ -4,10 +4,9 @@ import com.ead.course.domain.dtos.request.ModuleRequestDTO;
 import com.ead.course.domain.dtos.response.ModuleDTO;
 import com.ead.course.domain.models.CourseModel;
 import com.ead.course.domain.models.ModuleModel;
+import org.springframework.data.domain.Page;
 
 import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 
 public class ModuleConverter {
@@ -15,10 +14,8 @@ public class ModuleConverter {
     private ModuleConverter() {
     }
 
-    public static List<ModuleDTO> toDTOList(List<ModuleModel> moduleModels) {
-        return moduleModels.stream()
-                .map(ModuleConverter::toDTO)
-                .collect(Collectors.toList());
+    public static Page<ModuleDTO> toDTOPage(Page<ModuleModel> moduleModels) {
+        return moduleModels.map(ModuleConverter::toDTO);
     }
 
     public static ModuleDTO toDTO(ModuleModel moduleModel) {

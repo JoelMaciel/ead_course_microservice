@@ -6,12 +6,16 @@ import com.ead.course.domain.dtos.request.CourseUpdateRequestDTO;
 import com.ead.course.domain.dtos.response.CourseDTO;
 import com.ead.course.domain.models.CourseModel;
 import com.ead.course.domain.services.CourseService;
+import com.ead.course.domain.specifications.SpecificationTemplate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -22,8 +26,11 @@ public class CourseController {
     private final CourseService courseService;
 
     @GetMapping
-    public List<CourseDTO> getAllCourses() {
-        return courseService.findAll();
+    public Page<CourseDTO> getAllCourses(
+            SpecificationTemplate.CourseSpec spec, @PageableDefault(page = 0, size = 10,
+            sort = "courseId", direction = Sort.Direction.ASC) Pageable pageable
+    ) {
+        return courseService.findAll(spec, pageable);
     }
 
     @GetMapping("/{courseId}")
