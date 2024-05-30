@@ -20,7 +20,7 @@ public interface CourseService {
 
     CourseDTO update(UUID courseId, CourseUpdateRequestDTO courseUpdateRequestDTO);
 
-    Page<CourseDTO> findAll(Specification<CourseModel> spec, Pageable pageable);
+    Page<CourseDTO> findAll(Specification<CourseModel> spec, Pageable pageable, UUID userId);
 
     CourseDTO findById(UUID courseId);
 }
