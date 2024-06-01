@@ -16,7 +16,8 @@ import java.util.Set;
 import java.util.UUID;
 
 
-@Data
+@Getter
+@Setter
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor

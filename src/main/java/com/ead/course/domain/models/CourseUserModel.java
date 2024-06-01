@@ -1,12 +1,13 @@
 package com.ead.course.domain.models;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 import java.util.UUID;
 
-
+@Builder
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity

@@ -2,7 +2,7 @@ package com.ead.course.domain.exceptions;
 
 import java.util.UUID;
 
-public class CourseNotFoundException extends RuntimeException {
+public class CourseNotFoundException extends EntityNotFoundException {
 
     public CourseNotFoundException(String message) {
         super(message);
