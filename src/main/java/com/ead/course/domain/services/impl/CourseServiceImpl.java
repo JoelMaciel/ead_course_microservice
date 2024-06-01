@@ -13,6 +13,7 @@ import com.ead.course.domain.repositories.CourseRepository;
 import com.ead.course.domain.repositories.LessonRepository;
 import com.ead.course.domain.repositories.ModuleRepository;
 import com.ead.course.domain.services.CourseService;
+import com.ead.course.domain.specifications.SpecificationTemplate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -34,10 +35,16 @@ public class CourseServiceImpl implements CourseService {
     private final LessonRepository lessonRepository;
 
     @Override
-    public Page<CourseDTO> findAll(Specification<CourseModel> spec, Pageable pageable) {
-        Page<CourseModel> courseModels = courseRepository.findAll(spec, pageable);
+    public Page<CourseDTO> findAll(Specification<CourseModel> spec, Pageable pageable, UUID userId) {
+        Specification<CourseModel> finalSpec = createSpecificationWithUserId(spec, userId);
+
+        Page<CourseModel> courseModels = courseRepository.findAll(finalSpec, pageable);
         log.debug("GET list course {} ", courseModels.toString());
         return CourseConverter.toDTOPage(courseModels);
+    }
+
+    private Specification<CourseModel> createSpecificationWithUserId(Specification<CourseModel> spec, UUID userId) {
+        return (userId != null) ? SpecificationTemplate.courseUserId(userId).and(spec) : spec;
     }
 
     @Override
