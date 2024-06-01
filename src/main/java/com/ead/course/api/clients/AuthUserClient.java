@@ -56,6 +56,7 @@ public class AuthUserClient {
 
     public ResponseEntity<UserDTO> getOneUserById(UUID userId) {
         String url = REQUEST_URL_AUTHUSER + "/api/users/" + userId;
+        log.debug("Request URL: {} ", url);
         return restTemplate.exchange(url, HttpMethod.GET, null, UserDTO.class);
     }
 

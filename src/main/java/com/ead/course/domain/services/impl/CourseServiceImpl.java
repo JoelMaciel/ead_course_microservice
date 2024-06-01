@@ -1,11 +1,16 @@
 package com.ead.course.domain.services.impl;
 
 
+import com.ead.course.api.clients.AuthUserClient;
 import com.ead.course.domain.converter.CourseConverter;
 import com.ead.course.domain.dtos.request.CourseRequestDTO;
 import com.ead.course.domain.dtos.request.CourseUpdateRequestDTO;
 import com.ead.course.domain.dtos.response.CourseDTO;
+import com.ead.course.domain.dtos.response.UserDTO;
+import com.ead.course.domain.enums.UserType;
+import com.ead.course.domain.exceptions.BusinessException;
 import com.ead.course.domain.exceptions.CourseNotFoundException;
+import com.ead.course.domain.exceptions.UserNotFoundException;
 import com.ead.course.domain.models.CourseModel;
 import com.ead.course.domain.models.LessonModel;
 import com.ead.course.domain.models.ModuleModel;
@@ -19,8 +24,11 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -30,9 +38,11 @@ import java.util.UUID;
 @Service
 public class CourseServiceImpl implements CourseService {
 
+    public static final String BE_INSTRUCTOR_OR_ADMIN = "To save a course you need to be INSTRUCTOR OR ADMIN";
     private final CourseRepository courseRepository;
     private final ModuleRepository moduleRepository;
     private final LessonRepository lessonRepository;
+    private final AuthUserClient authUserClient;
 
     @Override
     public Page<CourseDTO> findAll(Specification<CourseModel> spec, Pageable pageable, UUID userId) {
@@ -58,6 +68,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public CourseDTO save(CourseRequestDTO courseRequestDTO) {
         CourseModel courseModel = CourseConverter.toEntity(courseRequestDTO);
+        validateUserInstructor(courseRequestDTO.getUserInstructor());
         log.debug("POST course saved {} ", courseModel.toString());
         return CourseConverter.toDTO(courseRepository.save(courseModel));
     }
@@ -84,6 +95,23 @@ public class CourseServiceImpl implements CourseService {
     public CourseModel optionalCourse(UUID courseUd) {
         return courseRepository.findById(courseUd)
                 .orElseThrow(() -> new CourseNotFoundException(courseUd));
+    }
+
+    private void validateUserInstructor(UUID userInstructor) {
+        ResponseEntity<UserDTO> userDTO;
+        try {
+            userDTO = authUserClient.getOneUserById(userInstructor);
+            log.debug("UserDTO -> UserType {} ", userDTO.getBody().getUserType());
+            UserType userType = UserType.valueOf(userDTO.getBody().getUserType());
+
+            if (userType.equals(UserType.STUDENT)) {
+                throw new BusinessException(BE_INSTRUCTOR_OR_ADMIN);
+            }
+        } catch (ResponseStatusException e) {
+            if (e.getStatus().equals(HttpStatus.NOT_FOUND)) {
+                throw new UserNotFoundException(userInstructor);
+            }
+        }
     }
 
     private void deleteModulesAndLessons(List<ModuleModel> moduleList) {
