@@ -12,9 +12,11 @@ import com.ead.course.domain.exceptions.BusinessException;
 import com.ead.course.domain.exceptions.CourseNotFoundException;
 import com.ead.course.domain.exceptions.UserNotFoundException;
 import com.ead.course.domain.models.CourseModel;
+import com.ead.course.domain.models.CourseUserModel;
 import com.ead.course.domain.models.LessonModel;
 import com.ead.course.domain.models.ModuleModel;
 import com.ead.course.domain.repositories.CourseRepository;
+import com.ead.course.domain.repositories.CourseUserRepository;
 import com.ead.course.domain.repositories.LessonRepository;
 import com.ead.course.domain.repositories.ModuleRepository;
 import com.ead.course.domain.services.CourseService;
@@ -42,6 +44,7 @@ public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
     private final ModuleRepository moduleRepository;
     private final LessonRepository lessonRepository;
+    private final CourseUserRepository courseUserRepository;
     private final AuthUserClient authUserClient;
 
     @Override
@@ -84,6 +87,7 @@ public class CourseServiceImpl implements CourseService {
     @Transactional
     @Override
     public void delete(CourseModel courseModel) {
+        deleteCourseUser(courseModel.getCourseId());
         List<ModuleModel> moduleList = moduleRepository.findAllModulesIntoCourse(courseModel.getCourseId());
         deleteModulesAndLessons(moduleList);
         courseRepository.delete(courseModel);
@@ -123,6 +127,13 @@ public class CourseServiceImpl implements CourseService {
                 }
             }
             moduleRepository.deleteAll(moduleList);
+        }
+    }
+
+    private void deleteCourseUser(UUID courseId) {
+        List<CourseUserModel> courseUserModels = courseUserRepository.findAllCourseUserIntoCourse(courseId);
+        if (!courseUserModels.isEmpty()) {
+            courseUserRepository.deleteAll(courseUserModels);
         }
     }
 }
