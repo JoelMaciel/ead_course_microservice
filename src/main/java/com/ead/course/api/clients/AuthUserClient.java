@@ -37,7 +37,6 @@ public class AuthUserClient {
 
         String url = REQUEST_URL_AUTHUSER + utilsService.createUrlGetAllUsersByCourse(courseId, pageable);
         log.debug("Request URL: {} ", url);
-        log.info("Request URL: {} ", url);
 
         try {
             ParameterizedTypeReference<ResponsePageDTO<UserDTO>> responseType =
@@ -71,5 +70,10 @@ public class AuthUserClient {
                 .courseId(courseId)
                 .userId(userId)
                 .build();
+    }
+
+    public void deleteCourseInAuthUser(UUID courseId) {
+        String url = REQUEST_URL_AUTHUSER + "/api/users/courses/" + courseId;
+        restTemplate.exchange(url, HttpMethod.DELETE, null, String.class);
     }
 }

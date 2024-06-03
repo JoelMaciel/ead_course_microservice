@@ -1,10 +1,9 @@
 package com.ead.course.api.controller;
 
 
-import com.ead.course.api.clients.AuthUserClient;
-import com.ead.course.domain.dtos.response.UserDTO;
 import com.ead.course.domain.dtos.request.SubscriptionUserIdRequestDTO;
 import com.ead.course.domain.dtos.response.CourseUserModelDTO;
+import com.ead.course.domain.dtos.response.UserDTO;
 import com.ead.course.domain.services.CourseUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,7 +22,6 @@ import java.util.UUID;
 @RequestMapping("/api/courses/{courseId}/users")
 public class CourseUserController {
 
-    private final AuthUserClient authUserClient;
     private final CourseUserService courseUserService;
 
     @GetMapping
@@ -31,7 +29,7 @@ public class CourseUserController {
             @PageableDefault(page = 0, size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable,
             @PathVariable UUID courseId
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(authUserClient.getAllUsersByCourse(courseId, pageable));
+        return ResponseEntity.status(HttpStatus.OK).body(courseUserService.getAllUsersByCourse(courseId, pageable));
     }
 
     @PostMapping("/subscription")
