@@ -16,6 +16,8 @@ import com.ead.course.domain.services.CourseService;
 import com.ead.course.domain.services.CourseUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -36,8 +38,9 @@ public class CourseUserServiceImpl implements CourseUserService {
     private final AuthUserClient authUserClient;
 
     @Override
-    public boolean existsByCourseAndUserId(CourseModel courseModel, UUID userId) {
-        return courseUserRepository.existsByCourseAndUserId(courseModel, userId);
+    public Page<UserDTO> getAllUsersByCourse(UUID courseId, Pageable pageable) {
+        courseService.optionalCourse(courseId);
+        return authUserClient.getAllUsersByCourse(courseId, pageable);
     }
 
     @Override
@@ -56,6 +59,26 @@ public class CourseUserServiceImpl implements CourseUserService {
         );
 
         return toDTO(courseUserModelSaved);
+    }
+
+    @Transactional
+    @Override
+    public void deleteCourseUserByUser(UUID userId) {
+        existsByUserId(userId);
+        courseUserRepository.deleteAllByUserId(userId);
+    }
+
+    @Override
+    public boolean existsByUserId(UUID userId) {
+        if (!courseUserRepository.existsByUserId(userId)) {
+            throw new UserNotFoundException(userId);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean existsByCourseAndUserId(CourseModel courseModel, UUID userId) {
+        return courseUserRepository.existsByCourseAndUserId(courseModel, userId);
     }
 
     private void validateUserStatusAndExistence(SubscriptionUserIdRequestDTO subscriptionUserIdRequestDTO) {
