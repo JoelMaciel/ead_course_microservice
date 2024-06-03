@@ -19,12 +19,12 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/courses/{courseId}/users")
+@RequestMapping
 public class CourseUserController {
 
     private final CourseUserService courseUserService;
 
-    @GetMapping
+    @GetMapping("/api/courses/{courseId}/users")
     public ResponseEntity<Page<UserDTO>> getAllUsersByCourse(
             @PageableDefault(page = 0, size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable,
             @PathVariable UUID courseId
@@ -32,7 +32,7 @@ public class CourseUserController {
         return ResponseEntity.status(HttpStatus.OK).body(courseUserService.getAllUsersByCourse(courseId, pageable));
     }
 
-    @PostMapping("/subscription")
+    @PostMapping("/api/courses/{courseId}/users/subscription")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<CourseUserModelDTO> saveSubscriptionUserInCourse(
             @PathVariable UUID courseId,
@@ -41,4 +41,9 @@ public class CourseUserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(courseUserService.save(courseId, subscriptionUserIdRequestDTO));
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/api/courses/users/{userId}")
+    public void deleteCourseUserByUser(@PathVariable UUID userId) {
+        courseUserService.deleteCourseUserByUser(userId);
+    }
 }
