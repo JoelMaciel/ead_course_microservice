@@ -52,7 +52,7 @@ public class CourseServiceImpl implements CourseService {
         Specification<CourseModel> finalSpec = createSpecificationWithUserId(spec, userId);
 
         Page<CourseModel> courseModels = courseRepository.findAll(finalSpec, pageable);
-        log.debug("GET list course {} ", courseModels.toString());
+        log.debug("GET list course {} ", courseModels.getContent().size());
         return CourseConverter.toDTOPage(courseModels);
     }
 
@@ -91,8 +91,7 @@ public class CourseServiceImpl implements CourseService {
         List<ModuleModel> moduleList = moduleRepository.findAllModulesIntoCourse(courseModel.getCourseId());
         deleteModulesAndLessons(moduleList);
         courseRepository.delete(courseModel);
-        log.debug("DELETE Module and Lesson {} ", moduleList.toString());
-        log.debug("DELETE course {} ", courseModel.toString());
+        log.debug("DELETE courseId {} ", courseModel.getCourseId());
     }
 
     @Override
@@ -135,5 +134,7 @@ public class CourseServiceImpl implements CourseService {
         if (!courseUserModels.isEmpty()) {
             courseUserRepository.deleteAll(courseUserModels);
         }
+        authUserClient.deleteCourseInAuthUser(courseId);
+        log.debug("Sending CourseId to be deleted {} -> ", courseId);
     }
 }
