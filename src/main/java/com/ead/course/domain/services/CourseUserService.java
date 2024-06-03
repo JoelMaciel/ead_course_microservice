@@ -16,4 +16,8 @@ public interface CourseUserService {
     CourseUserModelDTO save(UUID courseId, SubscriptionUserIdRequestDTO subscriptionUserIdRequestDTO);
 
     Page<UserDTO> getAllUsersByCourse(UUID courseId, Pageable pageable);
+
+    void deleteCourseUserByUser(UUID userId);
+
+    boolean existsByUserId(UUID userId);
 }

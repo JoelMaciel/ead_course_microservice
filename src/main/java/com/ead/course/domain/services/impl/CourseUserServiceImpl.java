@@ -61,6 +61,21 @@ public class CourseUserServiceImpl implements CourseUserService {
         return toDTO(courseUserModelSaved);
     }
 
+    @Transactional
+    @Override
+    public void deleteCourseUserByUser(UUID userId) {
+        existsByUserId(userId);
+        courseUserRepository.deleteAllByUserId(userId);
+    }
+
+    @Override
+    public boolean existsByUserId(UUID userId) {
+        if (!courseUserRepository.existsByUserId(userId)) {
+            throw new UserNotFoundException(userId);
+        }
+        return true;
+    }
+
     @Override
     public boolean existsByCourseAndUserId(CourseModel courseModel, UUID userId) {
         return courseUserRepository.existsByCourseAndUserId(courseModel, userId);
