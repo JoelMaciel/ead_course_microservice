@@ -1,5 +1,6 @@
 
-DELETE FROM COURSES;
+DELETE FROM courses;
+DELETE FROM users;
 
 INSERT INTO courses (
     course_id,

@@ -3,7 +3,9 @@ package com.ead.course.domain.converter;
 import com.ead.course.domain.dtos.request.CourseRequestDTO;
 import com.ead.course.domain.dtos.request.CourseUpdateRequestDTO;
 import com.ead.course.domain.dtos.response.CourseDTO;
+import com.ead.course.domain.dtos.response.UserEventDTO;
 import com.ead.course.domain.models.CourseModel;
+import com.ead.course.domain.models.UserModel;
 import org.springframework.data.domain.Page;
 
 import java.time.OffsetDateTime;
@@ -51,6 +53,17 @@ public class CourseConverter {
                 .courseStatus(courseUpdateRequestDTO.getCourseStatus())
                 .courseLevel(courseUpdateRequestDTO.getCourseLevel())
                 .updateDate(OffsetDateTime.now())
+                .build();
+    }
+
+    public static UserModel eventToEntity(UserEventDTO userEventDTO) {
+        return UserModel.builder()
+                .userId(userEventDTO.getUserId())
+                .fullName(userEventDTO.getFullName())
+                .email(userEventDTO.getEmail())
+                .userStatus(userEventDTO.getUserStatus())
+                .userType(userEventDTO.getUserType())
+                .cpf(userEventDTO.getCpf())
                 .build();
     }
 

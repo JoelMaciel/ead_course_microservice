@@ -54,6 +54,13 @@ public class CourseModel {
     @Fetch(FetchMode.SUBSELECT)
     private Set<ModuleModel> modules = new HashSet<>();
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "COURSES_USERS",
+            joinColumns = @JoinColumn(name = "course_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<UserModel> users;
+
 }
 
 
