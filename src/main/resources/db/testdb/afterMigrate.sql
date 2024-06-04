@@ -1,5 +1,4 @@
 
-DELETE FROM COURSES_USERS;
 DELETE FROM COURSES;
 
 INSERT INTO courses (
@@ -23,7 +22,3 @@ INSERT INTO courses (
     '2024-05-29 14:52:13',
     '2024-05-29 14:52:13'
 );
-
-
-
-insert into COURSES_USERS (id, course_id, user_id) values ('825922ca-1c75-43af-8600-0d42341cf449', '347a5bca-4734-4d1a-ad49-865dfa75b418', '5a96aa84-1f15-4333-ba60-54d99a3faccb')

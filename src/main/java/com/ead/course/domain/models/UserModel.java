@@ -11,20 +11,15 @@ import java.util.UUID;
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
-@Table(name = "COURSES_USERS")
-public class CourseUserModel {
+@Table(name = "USERS")
+public class UserModel {
 
     @Id
     @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @JoinColumn(name = "course_id")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private CourseModel course;
 
-    @Column(nullable = false)
-    private UUID userId;
 }
 
 
