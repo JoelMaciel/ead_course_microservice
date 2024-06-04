@@ -3,8 +3,7 @@ package com.ead.course.api.controller;
 
 import com.ead.course.domain.dtos.request.SubscriptionUserIdRequestDTO;
 import com.ead.course.domain.dtos.response.CourseUserModelDTO;
-import com.ead.course.domain.dtos.response.UserDTO;
-import com.ead.course.domain.services.CourseUserService;
+import com.ead.course.domain.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,14 +21,14 @@ import java.util.UUID;
 @RequestMapping
 public class CourseUserController {
 
-    private final CourseUserService courseUserService;
+    private final UserService userService;
 
     @GetMapping("/api/courses/{courseId}/users")
     public ResponseEntity<Page<UserDTO>> getAllUsersByCourse(
             @PageableDefault(page = 0, size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable,
             @PathVariable UUID courseId
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(courseUserService.getAllUsersByCourse(courseId, pageable));
+        return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     @PostMapping("/api/courses/{courseId}/users/subscription")
@@ -38,12 +37,6 @@ public class CourseUserController {
             @PathVariable UUID courseId,
             @RequestBody @Valid SubscriptionUserIdRequestDTO subscriptionUserIdRequestDTO
     ) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(courseUserService.save(courseId, subscriptionUserIdRequestDTO));
-    }
-
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/api/courses/users/{userId}")
-    public void deleteCourseUserByUser(@PathVariable UUID userId) {
-        courseUserService.deleteCourseUserByUser(userId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(null);
     }
 }
