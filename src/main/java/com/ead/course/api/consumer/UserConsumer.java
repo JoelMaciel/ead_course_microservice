@@ -28,11 +28,16 @@ public class UserConsumer {
     )
     public void listenUserEvent(@Payload UserEventDTO userEventDTO) {
         UserModel userModel = CourseConverter.eventToEntity(userEventDTO);
-        switch (ActionType.valueOf(userEventDTO.getActionType())) {
+        ActionType actionType = ActionType.valueOf(userEventDTO.getActionType());
+
+        switch (actionType) {
             case CREATE:
+            case UPDATE:
                 userService.save(userModel);
                 break;
+            case DELETE:
+                userService.delete(userEventDTO.getUserId());
+                break;
         }
-
     }
 }
