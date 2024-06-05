@@ -1,6 +1,7 @@
 package com.ead.course.domain.services.impl;
 
 
+import com.ead.course.api.controller.CourseController;
 import com.ead.course.domain.converter.CourseConverter;
 import com.ead.course.domain.dtos.request.CourseRequestDTO;
 import com.ead.course.domain.dtos.request.CourseUpdateRequestDTO;
@@ -27,6 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 @Log4j2
 @RequiredArgsConstructor
 @Service
@@ -45,8 +49,12 @@ public class CourseServiceImpl implements CourseService {
                 (userId != null) ? SpecificationTemplate.courseUserid(userId).and(spec) : spec;
 
         Page<CourseModel> courseModels = courseRepository.findAll(finalSpec, pageable);
+        Page<CourseDTO> courseDTOPage = CourseConverter.toDTOPage(courseModels);
+
+        addHateoasLinks(courseDTOPage);
+
         log.debug("GET list course {} ", courseModels.getNumberOfElements());
-        return CourseConverter.toDTOPage(courseModels);
+        return courseDTOPage;
     }
 
 
@@ -100,6 +108,15 @@ public class CourseServiceImpl implements CourseService {
 //            }
 //        }
 //    }
+
+    private void addHateoasLinks(Page<CourseDTO> courseDTOS) {
+        if (!courseDTOS.isEmpty()) {
+            for (CourseDTO courseDTO : courseDTOS) {
+                courseDTO.add(linkTo(methodOn(CourseController.class).getOneCourse(courseDTO.getCourseId())).withSelfRel());
+            }
+        }
+    }
+
 
     private void deleteModulesAndLessons(List<ModuleModel> moduleList) {
         if (!moduleList.isEmpty()) {

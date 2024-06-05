@@ -14,4 +14,6 @@ public interface UserService {
     UserModel optionalUser(UUID userId);
 
     Page<UserModel> findAll(Specification<UserModel> spec, Pageable pageable);
+
+    void delete(UUID userId);
 }

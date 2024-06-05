@@ -29,6 +29,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    public void delete(UUID userId) {
+        userRepository.deleteById(userId);
+        log.info("UserId deleted {} -> ", userId);
+    }
+
+    @Override
+    @Transactional
     public UserModel save(UserModel userModel) {
         log.info("TO SAVE {} :", userModel);
         return userRepository.save(userModel);

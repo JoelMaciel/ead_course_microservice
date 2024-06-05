@@ -5,13 +5,14 @@ import com.ead.course.domain.enums.CourseStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Data
 @Builder
-public class CourseDTO {
+public class CourseDTO extends RepresentationModel<CourseDTO> {
 
     private UUID courseId;
     private String name;
