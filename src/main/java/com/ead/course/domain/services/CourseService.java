@@ -2,6 +2,7 @@ package com.ead.course.domain.services;
 
 import com.ead.course.domain.dtos.request.CourseRequestDTO;
 import com.ead.course.domain.dtos.request.CourseUpdateRequestDTO;
+import com.ead.course.domain.dtos.request.SubscriptionUserIdRequestDTO;
 import com.ead.course.domain.dtos.response.CourseDTO;
 import com.ead.course.domain.models.CourseModel;
 import org.springframework.data.domain.Page;
@@ -23,4 +24,8 @@ public interface CourseService {
     Page<CourseDTO> findAll(Specification<CourseModel> spec, Pageable pageable, UUID userId);
 
     CourseDTO findById(UUID courseId);
+
+    boolean existsByCourseAndUser(UUID courseId, UUID userId);
+
+    void saveSubscriptionUserInCourse(UUID courseId, SubscriptionUserIdRequestDTO subscriptionUserIdRequestDTO);
 }
