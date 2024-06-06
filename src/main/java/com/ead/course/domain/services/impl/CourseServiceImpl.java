@@ -98,6 +98,9 @@ public class CourseServiceImpl implements CourseService {
         List<ModuleModel> moduleList = moduleRepository.findAllModulesIntoCourse(courseModel.getCourseId());
         deleteModulesAndLessons(moduleList);
 
+        courseRepository.deleteCourseUserByCourseId(courseModel.getCourseId());
+        log.info("Deleting CourseUser's relationship with CourseId: {}", courseModel.getCourseId());
+
         courseRepository.delete(courseModel);
         log.debug("DELETE courseId {} ", courseModel.getCourseId());
     }
