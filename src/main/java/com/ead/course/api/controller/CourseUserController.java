@@ -3,6 +3,7 @@ package com.ead.course.api.controller;
 
 import com.ead.course.domain.dtos.request.SubscriptionUserIdRequestDTO;
 import com.ead.course.domain.models.UserModel;
+import com.ead.course.domain.services.CourseService;
 import com.ead.course.domain.services.UserService;
 import com.ead.course.domain.specifications.SpecificationTemplate;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,9 @@ import java.util.UUID;
 @RequestMapping
 public class CourseUserController {
 
+    public static final String SUBSCRIPTION_CREATED_SUCCESSFULLY = "Subscription created successfully";
     private final UserService userService;
+    private final CourseService courseService;
 
     @GetMapping("/api/courses/{courseId}/users")
     public Page<UserModel> getAllUsersByCourse(
@@ -39,6 +42,7 @@ public class CourseUserController {
             @PathVariable UUID courseId,
             @RequestBody @Valid SubscriptionUserIdRequestDTO subscriptionUserIdRequestDTO
     ) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(null);
+        courseService.saveSubscriptionUserInCourse(courseId, subscriptionUserIdRequestDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(SUBSCRIPTION_CREATED_SUCCESSFULLY);
     }
 }

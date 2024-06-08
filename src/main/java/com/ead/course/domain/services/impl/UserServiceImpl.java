@@ -2,6 +2,7 @@ package com.ead.course.domain.services.impl;
 
 import com.ead.course.domain.exceptions.UserNotFoundException;
 import com.ead.course.domain.models.UserModel;
+import com.ead.course.domain.repositories.CourseRepository;
 import com.ead.course.domain.repositories.UserRepository;
 import com.ead.course.domain.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +22,20 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final CourseRepository courseRepository;
 
     @Override
     public Page<UserModel> findAll(Specification<UserModel> spec, Pageable pageable) {
         return userRepository.findAll(spec, pageable);
+    }
+
+    @Override
+    @Transactional
+    public void delete(UUID userId) {
+        courseRepository.deleteCourseUserByUserId(userId);
+        log.info("Deleting CourseUser's relationship with UserId: {}", userId);
+        userRepository.deleteById(userId);
+        log.info("UserId deleted {} -> ", userId);
     }
 
     @Override
