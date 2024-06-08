@@ -11,6 +11,8 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
 import java.util.Collection;
 import java.util.UUID;
@@ -78,10 +80,8 @@ public class SpecificationTemplate {
     public static Specification<CourseModel> courseUserid(final UUID userId) {
         return (root, query, cb) -> {
             query.distinct(true);
-            Root<CourseModel> course = root;
-            Root<UserModel> user = query.from(UserModel.class);
-            Expression<Collection<CourseModel>> usersCourses = course.get("courses");
-            return cb.and(cb.equal(course.get("userId"), userId), cb.isMember(course, usersCourses));
+            Join<CourseModel, UserModel> users = root.join("users", JoinType.INNER);
+            return cb.equal(users.get("userId"), userId);
         };
     }
 }
