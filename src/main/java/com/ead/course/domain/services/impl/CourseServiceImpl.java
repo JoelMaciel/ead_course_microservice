@@ -2,9 +2,11 @@ package com.ead.course.domain.services.impl;
 
 
 import com.ead.course.api.controller.CourseController;
+import com.ead.course.api.publisher.NotificationCommandPublisher;
 import com.ead.course.domain.converter.CourseConverter;
 import com.ead.course.domain.dtos.request.CourseRequestDTO;
 import com.ead.course.domain.dtos.request.CourseUpdateRequestDTO;
+import com.ead.course.domain.dtos.request.NotificationCommandDTO;
 import com.ead.course.domain.dtos.request.SubscriptionUserIdRequestDTO;
 import com.ead.course.domain.dtos.response.CourseDTO;
 import com.ead.course.domain.enums.UserStatus;
@@ -49,6 +51,7 @@ public class CourseServiceImpl implements CourseService {
     private final ModuleRepository moduleRepository;
     private final LessonRepository lessonRepository;
     private final UserService userService;
+    private final NotificationCommandPublisher notificationCommandPublisher;
 
     @Override
     public Page<CourseDTO> findAll(Specification<CourseModel> spec, Pageable pageable, UUID userId) {
@@ -60,14 +63,14 @@ public class CourseServiceImpl implements CourseService {
 
         addHateoasLinks(courseDTOPage);
 
-        log.debug("GET list course {} ", courseModels.getNumberOfElements());
+        log.info("GET list course {} ", courseModels.getNumberOfElements());
         return courseDTOPage;
     }
 
     @Override
     public CourseDTO findById(UUID courseId) {
         CourseModel courseModel = optionalCourse(courseId);
-        log.debug("GET One course {} ", courseModel.toString());
+        log.info("GET One course {} ", courseModel.toString());
 
         return CourseConverter.toDTO(courseModel);
     }
@@ -78,7 +81,7 @@ public class CourseServiceImpl implements CourseService {
         CourseModel courseModel = CourseConverter.toEntity(courseRequestDTO);
         validateUserInstructor(courseRequestDTO.getUserInstructor());
 
-        log.debug("POST course saved {} ", courseModel.toString());
+        log.info("POST course saved {} ", courseModel.toString());
         return CourseConverter.toDTO(courseRepository.save(courseModel));
     }
 
@@ -102,7 +105,7 @@ public class CourseServiceImpl implements CourseService {
         log.info("Deleting CourseUser's relationship with CourseId: {}", courseModel.getCourseId());
 
         courseRepository.delete(courseModel);
-        log.debug("DELETE courseId {} ", courseModel.getCourseId());
+        log.info("DELETE courseId {} ", courseModel.getCourseId());
     }
 
     @Override
@@ -113,29 +116,40 @@ public class CourseServiceImpl implements CourseService {
     @Transactional
     @Override
     public void saveSubscriptionUserInCourse(UUID courseId, SubscriptionUserIdRequestDTO subscriptionUserIdRequestDTO) {
-        validateCourseAndUser(courseId, subscriptionUserIdRequestDTO);
+        var course = optionalCourse(courseId);
+        var userModel = userService.optionalUser(subscriptionUserIdRequestDTO.getUserId());
 
+        validateCourseAndUser(course, userModel);
         courseRepository.saveCourseUser(courseId, subscriptionUserIdRequestDTO.getUserId());
+
+        sendSubscriptionUserInCourseToNotification(course, userModel);
+        log.info("Notification sent successfully");
     }
 
-    private void validateCourseAndUser(UUID courseId, SubscriptionUserIdRequestDTO subscriptionUserIdRequestDTO) {
-        optionalCourse(courseId);
-        UserModel userModel = userService.optionalUser(subscriptionUserIdRequestDTO.getUserId());
-
-        if (UserStatus.BLOCKED.toString().equals(userModel.getUserStatus())) {
-            throw new UserBlockedException(MSG_HE_IS_BLOCKED);
-        }
-
-        if (existsByCourseAndUser(courseId, subscriptionUserIdRequestDTO.getUserId())) {
-            throw new SubscriptionAlreadyExistsException(REGISTERED_FOR_THIS_COURSE);
+    @Override
+    public void sendSubscriptionUserInCourseToNotification(CourseModel course, UserModel user) {
+        try {
+            var notificationCommandDTO = CourseConverter.sendPublisherNotificationDTO(course, user);
+            notificationCommandPublisher.publishNotificationCommand(notificationCommandDTO);
+        } catch (Exception e) {
+            log.warn("Error sending notification");
         }
     }
-
 
     @Override
     public CourseModel optionalCourse(UUID courseUd) {
         return courseRepository.findById(courseUd)
                 .orElseThrow(() -> new CourseNotFoundException(courseUd));
+    }
+
+    private void validateCourseAndUser(CourseModel course, UserModel userModel) {
+        if (UserStatus.BLOCKED.toString().equals(userModel.getUserStatus())) {
+            throw new UserBlockedException(MSG_HE_IS_BLOCKED);
+        }
+
+        if (existsByCourseAndUser(course.getCourseId(), userModel.getUserId())) {
+            throw new SubscriptionAlreadyExistsException(REGISTERED_FOR_THIS_COURSE);
+        }
     }
 
     private void validateUserInstructor(UUID userInstructor) {
