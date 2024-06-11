@@ -5,6 +5,7 @@ import com.ead.course.domain.dtos.request.CourseUpdateRequestDTO;
 import com.ead.course.domain.dtos.request.SubscriptionUserIdRequestDTO;
 import com.ead.course.domain.dtos.response.CourseDTO;
 import com.ead.course.domain.models.CourseModel;
+import com.ead.course.domain.models.UserModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -28,4 +29,6 @@ public interface CourseService {
     boolean existsByCourseAndUser(UUID courseId, UUID userId);
 
     void saveSubscriptionUserInCourse(UUID courseId, SubscriptionUserIdRequestDTO subscriptionUserIdRequestDTO);
+
+    void sendSubscriptionUserInCourseToNotification(CourseModel course, UserModel user);
 }

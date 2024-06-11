@@ -2,6 +2,7 @@ package com.ead.course.domain.converter;
 
 import com.ead.course.domain.dtos.request.CourseRequestDTO;
 import com.ead.course.domain.dtos.request.CourseUpdateRequestDTO;
+import com.ead.course.domain.dtos.request.NotificationCommandDTO;
 import com.ead.course.domain.dtos.response.CourseDTO;
 import com.ead.course.domain.dtos.response.UserEventDTO;
 import com.ead.course.domain.models.CourseModel;
@@ -12,6 +13,9 @@ import java.time.OffsetDateTime;
 
 
 public class CourseConverter {
+
+    public static final String WELCOME_TO_THE_COURSE = "Welcome to the Course: ";
+    public static final String REGISTRATION_WAS_SUCCESSFUL = " Your registration was successful!";
 
     private CourseConverter() {
     }
@@ -67,4 +71,11 @@ public class CourseConverter {
                 .build();
     }
 
+    public static NotificationCommandDTO sendPublisherNotificationDTO(CourseModel course, UserModel user) {
+        return NotificationCommandDTO.builder()
+                .title(WELCOME_TO_THE_COURSE + course.getName())
+                .message(user.getFullName() + REGISTRATION_WAS_SUCCESSFUL)
+                .userId(user.getUserId())
+                .build();
+    }
 }
