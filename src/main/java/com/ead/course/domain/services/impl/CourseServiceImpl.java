@@ -1,12 +1,12 @@
 package com.ead.course.domain.services.impl;
 
 
+import com.ead.course.api.config.security.AuthenticationCurrentUserService;
 import com.ead.course.api.controller.CourseController;
 import com.ead.course.api.publisher.NotificationCommandPublisher;
 import com.ead.course.domain.converter.CourseConverter;
 import com.ead.course.domain.dtos.request.CourseRequestDTO;
 import com.ead.course.domain.dtos.request.CourseUpdateRequestDTO;
-import com.ead.course.domain.dtos.request.NotificationCommandDTO;
 import com.ead.course.domain.dtos.request.SubscriptionUserIdRequestDTO;
 import com.ead.course.domain.dtos.response.CourseDTO;
 import com.ead.course.domain.enums.UserStatus;
@@ -30,6 +30,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,11 +48,13 @@ public class CourseServiceImpl implements CourseService {
     public static final String BE_INSTRUCTOR_OR_ADMIN = "To save a course you need to be INSTRUCTOR OR ADMIN";
     public static final String REGISTERED_FOR_THIS_COURSE = "User already registered for this course";
     public static final String MSG_HE_IS_BLOCKED = "User cannot register because he is blocked.";
+    public static final String USER_DOES_NOT_HAVE_PERMISSION = "User current different from userInstructor";
     private final CourseRepository courseRepository;
     private final ModuleRepository moduleRepository;
     private final LessonRepository lessonRepository;
     private final UserService userService;
     private final NotificationCommandPublisher notificationCommandPublisher;
+    private final AuthenticationCurrentUserService authenticationCurrentUserService;
 
     @Override
     public Page<CourseDTO> findAll(Specification<CourseModel> spec, Pageable pageable, UUID userId) {
@@ -153,12 +156,20 @@ public class CourseServiceImpl implements CourseService {
     }
 
     private void validateUserInstructor(UUID userInstructor) {
+        UUID currentUserId = authenticationCurrentUserService.getCurrentUser().getUserId();
+
+        if (!currentUserId.equals(userInstructor)) {
+            throw new AccessDeniedException(USER_DOES_NOT_HAVE_PERMISSION);
+        }
+
         UserModel userModel = userService.optionalUser(userInstructor);
         UserType userType = UserType.valueOf(userModel.getUserType());
-        if (userType.equals(UserType.STUDENT)) {
+
+        if (userType == UserType.STUDENT) {
             throw new BusinessException(BE_INSTRUCTOR_OR_ADMIN);
         }
     }
+
 
     private void addHateoasLinks(Page<CourseDTO> courseDTOS) {
         if (!courseDTOS.isEmpty()) {
