@@ -91,7 +91,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<?> handleAccessDenied(AccessDeniedException ex, WebRequest webRequest) {
         HttpStatus status = HttpStatus.FORBIDDEN;
         ProblemType problemType = ProblemType.FORBIDDEN;
-        String detail =  "Access denied";
+        String detail = "Access denied";
 
         Problem problem = createProblemBuilder(status, problemType, detail)
                 .userMessage(NOT_HAVE_PERMISSION_TO_ACCESS_THIS_RESOURCE)
@@ -112,19 +112,6 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
         return handleExceptionInternal(ex, problem, new HttpHeaders(), status, webRequest);
     }
-
-//    @ExceptionHandler(CallNotPermittedException.class)
-//    public ResponseEntity<?> handleCallNotPermitted(CallNotPermittedException ex, WebRequest webRequest) {
-//        HttpStatus status = HttpStatus.SERVICE_UNAVAILABLE;
-//        ProblemType problemType = ProblemType.SYSTEM_ERROR;
-//        String detail = ex.getMessage();
-//
-//        Problem problem = createProblemBuilder(status, problemType, detail)
-//                .userMessage(MSG_AGAIN_IN_A_FEW_MOMENTS)
-//                .build();
-//
-//        return handleExceptionInternal(ex, problem, new HttpHeaders(), status, webRequest);
-//    }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<?> handleCircuitBreaker(IllegalArgumentException ex, WebRequest webRequest) {
