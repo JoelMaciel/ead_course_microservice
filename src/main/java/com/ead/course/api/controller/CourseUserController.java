@@ -38,7 +38,7 @@ public class CourseUserController {
         return userService.findAll(SpecificationTemplate.userCourseId(courseId).and(spec), pageable);
     }
 
-    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @PostMapping("/api/courses/{courseId}/users/subscription")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Object> saveSubscriptionUserInCourse(
