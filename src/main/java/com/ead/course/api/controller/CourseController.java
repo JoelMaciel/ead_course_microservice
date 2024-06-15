@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -25,6 +26,7 @@ public class CourseController {
 
     private final CourseService courseService;
 
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping
     public Page<CourseDTO> getAllCourses(
             SpecificationTemplate.CourseSpec spec, @PageableDefault(page = 0, size = 10,
@@ -34,17 +36,20 @@ public class CourseController {
         return courseService.findAll(spec, pageable, userId);
     }
 
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping("/{courseId}")
     public CourseDTO getOneCourse(@PathVariable UUID courseId) {
         return courseService.findById(courseId);
     }
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CourseDTO saveCourse(@RequestBody @Valid CourseRequestDTO courseRequestDTO) {
         return courseService.save(courseRequestDTO);
     }
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @PatchMapping("/{courseId}")
     public CourseDTO updateCourse(
             @PathVariable UUID courseId,
@@ -53,6 +58,7 @@ public class CourseController {
         return courseService.update(courseId, courseUpdateRequestDTO);
     }
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{courseId}")
     public void deleteCourse(@PathVariable UUID courseId) {

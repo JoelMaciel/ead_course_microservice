@@ -6,6 +6,8 @@ import lombok.Getter;
 public enum ProblemType {
     SYSTEM_ERROR("system-error", "System error"),
     INVALID_DATA("invalid-data", "Invalid data"),
+    FORBIDDEN("forbidden", "Forbidden"),
+    UNAUTHORIZED("Unauthorized", "Unauthorized"),
     INCOMPREHENSIBLE_MESSAGE("/incomprehesible_message", "Incomprehesible Message"),
     RESOURCE_NOT_FOUND("/resource-not-found", "Resource Not Found"),
     ENTITY_IN_USE("/entity-in-use", "Entity In Use"),

@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -23,7 +24,7 @@ import java.util.UUID;
 public class LessonController {
 
     private final LessonService lessonService;
-
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping
     public Page<LessonDTO> getAllLessons(
             @PathVariable UUID moduleId, SpecificationTemplate.LessonSpec spec,
@@ -36,11 +37,13 @@ public class LessonController {
 
     }
 
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping("/{lessonId}")
     public LessonDTO getOneLesson(@PathVariable UUID moduleId, @PathVariable UUID lessonId) {
         return lessonService.findById(moduleId, lessonId);
     }
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @PutMapping("/{lessonId}")
     public LessonDTO updateLesson(
             @PathVariable UUID moduleId, @PathVariable UUID lessonId,
@@ -49,12 +52,14 @@ public class LessonController {
         return lessonService.update(moduleId, lessonId, lessonUpdateRequestDTO);
     }
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public LessonDTO saveLesson(@PathVariable UUID moduleId, @RequestBody @Valid LessonRequestDTO lessonRequestDTO) {
         return lessonService.save(moduleId, lessonRequestDTO);
     }
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @DeleteMapping("/{lessonId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteLesson(@PathVariable UUID moduleId, @PathVariable UUID lessonId) {
