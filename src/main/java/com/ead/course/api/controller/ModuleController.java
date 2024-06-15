@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -24,6 +25,7 @@ public class ModuleController {
 
     private final ModuleService moduleService;
 
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping
     public Page<ModuleDTO> getAllModules(
             @PathVariable UUID courseId, SpecificationTemplate.ModuleSpec spec,
@@ -33,16 +35,19 @@ public class ModuleController {
         return moduleService.findAllByCourse(SpecificationTemplate.moduleCourseId(courseId).and(spec), pageable);
     }
 
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping("/{moduleId}")
     public ModuleDTO getOneModule(@PathVariable UUID courseId, @PathVariable UUID moduleId) {
         return moduleService.findById(courseId, moduleId);
     }
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @PostMapping()
     public ModuleDTO saveModule(@PathVariable UUID courseId, @RequestBody @Valid ModuleRequestDTO moduleRequestDTO) {
         return moduleService.save(courseId, moduleRequestDTO);
     }
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @PutMapping("/{moduleId}")
     public ModuleDTO updateModule(
             @PathVariable UUID courseId, @PathVariable UUID moduleId,
@@ -51,6 +56,7 @@ public class ModuleController {
         return moduleService.update(courseId, moduleId, moduleRequestDTO);
     }
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{moduleId}")
     public void deleteModule(@PathVariable UUID courseId, @PathVariable UUID moduleId) {
